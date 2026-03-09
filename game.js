@@ -34,8 +34,7 @@ let lastTimestamp    = null;
 const keysDown     = new Set();
 let lastPressedDir = null;
 
-let mouthAngle = 0.25;
-let mouthDir   = 1;
+let walkPhase = 0;
 
 // ---- Directions ----
 const DIR_INFO = {
@@ -288,30 +287,44 @@ function drawGoal() {
   ctx.shadowBlur = 0;
 }
 
+// Top-view walking person (faces playerFacing direction)
 function drawPlayer() {
-  mouthAngle += 0.1 * mouthDir;
-  if (mouthAngle > 0.38) mouthDir = -1;
-  if (mouthAngle < 0.02) mouthDir =  1;
+  walkPhase += 0.18;
+  const swing = Math.sin(walkPhase) * 3.5;
 
-  const x      = playerPixel.x + CELL_SIZE / 2;
-  const y      = playerPixel.y + CELL_SIZE / 2;
-  const radius = CELL_SIZE / 2 - 4;
+  const cx = playerPixel.x + CELL_SIZE / 2;
+  const cy = playerPixel.y + CELL_SIZE / 2;
 
   ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(playerFacing);
-  ctx.shadowColor = '#ffff00'; ctx.shadowBlur = 10;
-  ctx.fillStyle = '#ffff00';
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.arc(0, 0, radius, mouthAngle, Math.PI * 2 - mouthAngle);
-  ctx.closePath();
-  ctx.fill();
+  ctx.translate(cx, cy);
+  ctx.rotate(playerFacing); // figure faces movement direction
+
+  ctx.shadowColor = '#44aaff';
+  ctx.shadowBlur  = 8;
+
+  // Legs (drawn first — furthest back, behind body)
+  ctx.fillStyle = '#2a3a55'; // dark jeans
+  ctx.beginPath(); ctx.ellipse(-8,  3 + swing, 3, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(-8, -3 - swing, 3, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Torso
+  ctx.fillStyle = '#3366cc'; // blue shirt
+  ctx.beginPath(); ctx.ellipse(-1, 0, 8, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Arms (swing opposite to legs)
+  ctx.fillStyle = '#f5c098'; // skin
+  ctx.beginPath(); ctx.ellipse(0,  8 - swing * 0.6, 2.5, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, -8 + swing * 0.6, 2.5, 4.5, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Head (at front of figure)
   ctx.shadowBlur = 0;
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath();
-  ctx.arc(radius * 0.28, -radius * 0.45, 2.5, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.fillStyle = '#f5c098'; // skin
+  ctx.beginPath(); ctx.arc(9, 0, 5, 0, Math.PI * 2); ctx.fill();
+
+  // Hair — back half arc to suggest depth
+  ctx.fillStyle = '#6b3a2a';
+  ctx.beginPath(); ctx.arc(9, 0, 5, Math.PI * 0.6, Math.PI * 1.4); ctx.fill();
+
   ctx.restore();
 }
 
@@ -419,8 +432,7 @@ function startLevel() {
   targetPixel      = { x: 0, y: 0 };
   isMoving         = false;
   playerFacing     = 0;
-  mouthAngle       = 0.25;
-  mouthDir         = 1;
+  walkPhase        = 0;
   lastPressedDir   = null;
   keysDown.clear();
   gameState        = 'playing';
@@ -459,7 +471,7 @@ async function shareScore() {
   const resultText = gameState === 'game_complete'
     ? `ניצחתי את כל ${MAX_LEVEL} השלבים`
     : `הגעתי לשלב ${level}`;
-  const text = `🚀 ממ"ד ראן של עברי 🏠\n${resultText} עם ${score} נקודות!\nהאם תוכל לעשות יותר ממני?`;
+  const text = `🚀 ממ"ד ראן של עברי 🏠\n${resultText} עם ${score} נקודות!\nהאם תוכל לעשות יותר ממני?\n\nhttps://karnovsk.github.io/mammad_run/`;
 
   if (navigator.share) {
     try { await navigator.share({ title: 'ממ"ד ראן של עברי', text }); } catch (_) {}

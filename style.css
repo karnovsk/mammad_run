@@ -55,8 +55,16 @@ body {
   border: 3px solid #4a4ae0;
   border-radius: 4px;
   box-shadow: 0 0 24px rgba(74, 74, 224, 0.5);
-  width: min(600px, 100vw);
-  height: min(600px, 100vw); /* keeps 1:1 ratio, internal res stays 600×600 */
+  /* canvas is square; shrinks when viewport height is too short to fit the d-pad */
+  width: min(600px, 100vw, calc(100dvh - 310px));
+  height: min(600px, 100vw, calc(100dvh - 310px));
+}
+
+/* Extra-small phones: shrink d-pad buttons so everything fits */
+@media (max-height: 650px) {
+  .dpad-btn { width: 52px; height: 52px; font-size: 1.2em; }
+  #dpad { margin-top: 8px; gap: 3px; }
+  .dpad-row { gap: 3px; }
 }
 
 #overlay {
