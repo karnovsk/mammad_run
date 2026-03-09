@@ -1,0 +1,236 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #0a0a1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #fff;
+  direction: rtl;
+  touch-action: manipulation; /* prevent double-tap zoom */
+}
+
+#game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#hud {
+  display: flex;
+  justify-content: space-between;
+  width: min(600px, 100vw);
+  padding: 8px 20px;
+  background: #16213e;
+  border: 2px solid #4a4ae0;
+  border-radius: 8px;
+  font-size: 1.2em;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+}
+
+#timer-display.warning {
+  color: #ff4444;
+  animation: pulse 0.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 1; }
+  to   { opacity: 0.4; }
+}
+
+#canvas-wrapper {
+  position: relative;
+}
+
+#gameCanvas {
+  display: block;
+  border: 3px solid #4a4ae0;
+  border-radius: 4px;
+  box-shadow: 0 0 24px rgba(74, 74, 224, 0.5);
+  width: min(600px, 100vw);
+  height: min(600px, 100vw); /* keeps 1:1 ratio, internal res stays 600×600 */
+}
+
+#overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+}
+
+#overlay-content {
+  text-align: center;
+  padding: 36px 40px;
+  max-width: 420px;
+}
+
+#overlay-title {
+  font-size: 2.6em;
+  color: #ffd700;
+  text-shadow: 0 0 16px #ffd700;
+  margin-bottom: 18px;
+}
+
+#overlay-message {
+  font-size: 1.05em;
+  color: #ccc;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+#overlay-controls {
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 28px;
+}
+
+#start-btn {
+  padding: 12px 36px;
+  font-size: 1.15em;
+  font-weight: bold;
+  background: #4a4ae0;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#start-btn:hover {
+  background: #6060ff;
+  transform: scale(1.05);
+}
+
+#start-btn:active {
+  transform: scale(0.97);
+}
+
+/* ---- Missile track ---- */
+#missile-track {
+  position: relative;
+  width: min(600px, 100vw);
+  height: 32px;
+  background: #0a0a2a;
+  border: 1px solid #4a4ae0;
+  border-radius: 6px;
+  overflow: hidden;
+  direction: ltr; /* always LTR so left% is physical left */
+}
+
+#missile-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg); /* 45° clockwise */
+  font-size: 1.3em;
+  transition: left 0.9s linear;
+  left: 4px; /* initial; overridden by JS with pixel values */
+  filter: drop-shadow(0 0 4px #ff8800);
+}
+
+#missile-shelter {
+  position: absolute;
+  right: 2%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.3em;
+  filter: drop-shadow(0 0 4px #00ff88);
+}
+
+/* ---- Level display in HUD ---- */
+#level-display {
+  font-size: 0.9em;
+  color: #aaaaff;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Overlay buttons ---- */
+#overlay-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#next-btn {
+  padding: 12px 36px;
+  font-size: 1.15em;
+  font-weight: bold;
+  background: #00aa55;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#next-btn:hover  { background: #00cc66; transform: scale(1.05); }
+#next-btn:active { transform: scale(0.97); }
+
+#share-btn {
+  padding: 10px 28px;
+  font-size: 1em;
+  font-weight: bold;
+  background: #333366;
+  color: #cce;
+  border: 1px solid #6666aa;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#share-btn:hover  { background: #4444aa; transform: scale(1.03); }
+#share-btn:active { transform: scale(0.97); }
+
+/* ---- D-Pad ---- */
+#dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+  direction: ltr; /* prevent RTL page from swapping left/right buttons */
+}
+
+.dpad-row {
+  display: flex;
+  gap: 4px;
+}
+
+.dpad-btn {
+  width: 64px;
+  height: 64px;
+  font-size: 1.5em;
+  background: #16213e;
+  color: #e0e0ff;
+  border: 2px solid #4a4ae0;
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background 0.1s;
+}
+
+.dpad-btn:active,
+.dpad-btn.pressed {
+  background: #4a4ae0;
+  color: #fff;
+}
+
+.dpad-space {
+  background: transparent;
+  border-color: transparent;
+  pointer-events: none;
+  cursor: default;
+}

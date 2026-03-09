@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ממ"ד ראן של עברי</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+
+    <div id="hud">
+      <span id="score-display">ניקוד: 0</span>
+      <span id="level-display">שלב 1/7</span>
+      <span id="timer-display">30s</span>
+    </div>
+
+    <!-- Missile track: 🚀 flies left→right toward shelter 🏠 -->
+    <div id="missile-track">
+      <span id="missile-icon">🚀</span>
+      <span id="missile-shelter">🏠</span>
+    </div>
+
+    <div id="canvas-wrapper">
+      <canvas id="gameCanvas" width="600" height="600"></canvas>
+      <div id="overlay">
+        <div id="overlay-content">
+          <h1 id="overlay-title">ממ"ד Run של עברי</h1>
+          <p id="overlay-message">רוץ למקלט לפני שהטיל מגיע!<br>אסוף פרסים בדרך.</p>
+          <p id="overlay-controls">מקלדת: חצים / WASD &nbsp;|&nbsp; מובייל: D-Pad למטה</p>
+          <div id="overlay-buttons">
+            <button id="start-btn">התחל משחק</button>
+            <button id="next-btn" style="display:none">▶ קח סיכון והמשך לשלב הבא? </button>
+            <button id="share-btn" style="display:none">📤 שתף תוצאה</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="dpad">
+      <div class="dpad-row">
+        <button class="dpad-btn" data-dir="up">▲</button>
+      </div>
+      <div class="dpad-row">
+        <button class="dpad-btn" data-dir="left">◀</button>
+        <button class="dpad-btn dpad-space"></button>
+        <button class="dpad-btn" data-dir="right">▶</button>
+      </div>
+      <div class="dpad-row">
+        <button class="dpad-btn" data-dir="down">▼</button>
+      </div>
+    </div>
+
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>
